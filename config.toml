@@ -1,0 +1,27 @@
+# RAM Eating Pet Simulator - Configuration File
+
+[pet]
+starting_size_mb = 50
+max_size_mb = 2048
+metabolism_rate = 1.0
+hunger_rate = 2.0
+critical_hunger = 80.0
+happiness_decay = 1.0
+
+[graphics]
+use_colors = true
+animations = true
+fps = 10
+debug_mode = false
+
+[system]
+min_free_ram_mb = 1024
+warning_threshold_mb = 2048
+monitoring = true
+update_interval = { secs = 1, nanos = 0 }
+
+[game]
+autosave_interval = 60
+sound_enabled = true
+difficulty = "Normal"
+save_path = "saves/pet_save.json"
