@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <your.email@example.com>"]
 description = "A virtual pet that literally eats your computer's RAM to survive"
-repository = "https://github.com/yourusername/RAM-Eating-Pet-Simulator"
+repository = "https://github.com/Myrmecology/RAM-Eating-Pet-Simulator"
 license = "MIT"
 keywords = ["game", "pet", "simulator", "ram", "virtual-pet"]
 categories = ["games"]
@@ -27,6 +27,7 @@ rand = "0.8"
 # Serialization for save states
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+toml = "0.8"
 
 # Time handling
 chrono = "0.4"
