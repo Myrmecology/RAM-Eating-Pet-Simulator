@@ -1,4 +1,5 @@
 # 🎮 RAM Eating Pet Simulator
+# Random Access Memory
 
 A virtual pet that **literally** consumes your computer's RAM to survive! Watch in Task Manager as your adorable digital companion grows by eating actual memory.
 
