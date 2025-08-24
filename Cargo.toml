@@ -1,6 +1,60 @@
 [package]
 name = "ram_eating_pet_simulator"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A virtual pet that literally eats your computer's RAM to survive"
+repository = "https://github.com/yourusername/RAM-Eating-Pet-Simulator"
+license = "MIT"
+keywords = ["game", "pet", "simulator", "ram", "virtual-pet"]
+categories = ["games"]
 
 [dependencies]
+# Terminal UI and colors
+crossterm = "0.27"
+colored = "2.1"
+unicode-width = "0.1"
+
+# System information
+sysinfo = "0.30"
+
+# Async runtime for background tasks
+tokio = { version = "1.35", features = ["full"] }
+
+# Random generation for personality
+rand = "0.8"
+
+# Serialization for save states
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Time handling
+chrono = "0.4"
+
+# Better error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging (optional but useful for debugging)
+log = "0.4"
+env_logger = "0.11"
+
+[dev-dependencies]
+# For testing
+assert_cmd = "2.0"
+predicates = "3.0"
+
+[profile.release]
+# Optimize for size (makes the pet "lighter")
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+# Faster compilation during development
+opt-level = 0
+
+[[bin]]
+name = "ram_pet"
+path = "src/main.rs"
