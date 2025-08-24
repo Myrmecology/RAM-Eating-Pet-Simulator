@@ -1,0 +1,330 @@
+# ==================================================
+# Rust & Cargo
+# ==================================================
+# Compiled files and executables
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (uncomment if you're building a library)
+# Cargo.lock
+
+# Backup files
+*.orig
+*.bak
+*.backup
+*.old
+*.save
+*.swp
+*.swo
+*.swn
+*.tmp
+*.temp
+*~
+
+# ==================================================
+# Security Critical - Keys & Credentials
+# ==================================================
+# Private keys
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.cer
+*.der
+*.priv
+*.pub
+*.asc
+*.gpg
+*.pgp
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_dsa
+id_dsa.pub
+id_ecdsa
+id_ecdsa.pub
+id_ed25519
+id_ed25519.pub
+*.ssh
+
+# YubiKey related
+*.yk
+*.yubikey
+*_yubikey_*
+.yubico/
+yubikey-manager.ini
+
+# Environment and secrets
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+secrets/
+secret/
+credentials/
+credentials.*
+config/secrets/
+.secrets
+*.secret
+*.secrets
+.credentials
+*.private
+private/
+
+# API Keys
+*api_key*
+*apikey*
+*api-key*
+.api_keys
+*.token
+*_token*
+.tokens/
+
+# ==================================================
+# OS Specific
+# ==================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.msix
+*.msm
+*.msp
+*.cab
+*.msi
+*.stackdump
+
+# Windows credential stores
+*.rdp
+*.pst
+
+# macOS (in case you switch platforms)
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.AppleDB
+.AppleDesktop
+.apdisk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+*~
+.fuse_hidden*
+
+# ==================================================
+# IDE & Editors
+# ==================================================
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+*.vsix
+
+# IntelliJ/Rust Rover
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+cmake-build-*/
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+Session.vim
+.netrwhist
+tags
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+
+# ==================================================
+# Build & Debug
+# ==================================================
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.ilk
+*.map
+*.exp
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+*.app
+
+# Profiling
+*.prof
+*.profdata
+*.profraw
+perf.data
+perf.data.old
+flamegraph.svg
+*.trace
+
+# Core dumps
+core
+core.*
+vgcore.*
+*.core
+
+# ==================================================
+# Testing & Coverage
+# ==================================================
+# Test results
+*.test
+test-results/
+tests/output/
+tarpaulin-report.html
+cobertura.xml
+coverage/
+*.lcov
+*.gcno
+*.gcda
+*.gcov
+
+# Benchmark results
+/bench_results/
+*.bench
+
+# ==================================================
+# Logs & Databases
+# ==================================================
+# Logs
+*.log
+*.log.*
+logs/
+log/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ==================================================
+# Package Managers & Dependencies
+# ==================================================
+# Node (in case you add any JS tooling)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Python (for any helper scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+venv/
+env/
+.venv/
+.env/
+
+# ==================================================
+# Project Specific
+# ==================================================
+# RAM Pet save files (we'll store these elsewhere)
+*.pet_save
+*.pet_backup
+pet_data/
+save_states/
+
+# Temporary RAM test files
+ram_test_*
+memory_dump_*
+
+# User-specific configuration
+user_config.toml
+local_settings.toml
+*.user.toml
+
+# ==================================================
+# Documentation
+# ==================================================
+# Generated documentation
+/doc/
+/docs/build/
+*.pdf
+*.aux
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# ==================================================
+# Misc Security
+# ==================================================
+# Archive files that might contain sensitive data
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+*.gz
+*.bz2
+*.xz
+
+# Patch files
+*.patch
+*.diff
+
+# Temporary directories
+tmp/
+temp/
+.tmp/
+.temp/
+cache/
+.cache/
+
+# ==================================================
+# CI/CD
+# ==================================================
+.github/workflows/secrets/
+.gitlab-ci-local/
+.buildkite/local/
+*.deploy
+deploy_key
+deployment_key
+
+# ==================================================
+# Never ignore (force include with !)
+# ==================================================
+!.gitignore
+!README.md
+!Cargo.toml
+!src/
+!LICENSE
