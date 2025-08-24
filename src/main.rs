@@ -7,7 +7,7 @@ use crossterm::{
     cursor,
     event::{self, Event, KeyCode, KeyEvent},
     execute,
-    terminal::{self, ClearType},
+    terminal::{self, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use log::info;
 use std::io::stdout;
@@ -32,17 +32,26 @@ async fn main() -> Result<()> {
     // Print welcome message
     print_welcome();
     
-    // Setup terminal
+    // Setup terminal with alternate screen to prevent flickering
     terminal::enable_raw_mode()?;
     let mut stdout = stdout();
-    execute!(stdout, terminal::Clear(ClearType::All), cursor::Hide)?;
+    execute!(
+        stdout,
+        EnterAlternateScreen,  // Use alternate screen buffer
+        terminal::Clear(ClearType::All),
+        cursor::Hide
+    )?;
     
     // Create and run the game
     let result = run_game().await;
     
     // Cleanup terminal on exit
     terminal::disable_raw_mode()?;
-    execute!(stdout, cursor::Show, terminal::Clear(ClearType::All))?;
+    execute!(
+        stdout,
+        LeaveAlternateScreen,  // Return to main screen
+        cursor::Show
+    )?;
     
     // Print goodbye message
     print_goodbye();
@@ -52,37 +61,80 @@ async fn main() -> Result<()> {
 
 async fn run_game() -> Result<()> {
     let mut game = Game::new()?;
-    let mut tick_interval = interval(Duration::from_millis(100));
+    // Reduced tick rate to prevent flickering
+    let mut tick_interval = interval(Duration::from_millis(200));
+    let mut last_update = std::time::Instant::now();
+    
+    // Initial render
+    game.render()?;
     
     loop {
-        // Handle input
-        if event::poll(Duration::from_millis(10))? {
-            if let Event::Key(key_event) = event::read()? {
-                if !handle_input(&mut game, key_event).await? {
-                    break; // Exit game
+        // Check if pet died FIRST before any rendering
+        if game.is_pet_dead() {
+            // Show death screen
+            game.show_death_screen()?;
+            
+            // Wait for any key press to exit
+            loop {
+                if event::poll(Duration::from_millis(100))? {
+                    if let Event::Key(_) = event::read()? {
+                        return Ok(()); // Exit the game
+                    }
                 }
             }
         }
         
-        // Update game state
-        tick_interval.tick().await;
-        game.update().await?;
-        
-        // Render
-        game.render()?;
-        
-        // Check if pet died
-        if game.is_pet_dead() {
-            game.show_death_screen()?;
-            tokio::time::sleep(Duration::from_secs(3)).await;
-            break;
+        // Handle input with shorter poll time for responsiveness
+        if event::poll(Duration::from_millis(50))? {
+            if let Event::Key(key_event) = event::read()? {
+                // Check if we should exit
+                if !handle_input(&mut game, key_event).await? {
+                    return Ok(()); // Exit game
+                }
+                
+                // Always render after input to show changes immediately
+                game.render()?;
+            }
         }
+        
+        // Update game state periodically (but not if help is showing)
+        let now = std::time::Instant::now();
+        if now.duration_since(last_update) >= Duration::from_millis(200) {
+            last_update = now;
+            
+            // Only update if help is not showing
+            if !game.is_help_showing() {
+                game.update().await?;
+            }
+            
+            // Always render to keep display fresh
+            game.render()?;
+        }
+        
+        // Consume the tick to maintain timing
+        tick_interval.tick().await;
     }
-    
-    Ok(())
 }
 
 async fn handle_input(game: &mut Game, key: KeyEvent) -> Result<bool> {
+    // If help is showing, only allow H to close it or Q to quit
+    if game.is_help_showing() {
+        match key.code {
+            KeyCode::Char('h') | KeyCode::Char('H') => {
+                game.toggle_help();
+                return Ok(true);
+            }
+            KeyCode::Char('q') | KeyCode::Char('Q') | KeyCode::Esc => {
+                return Ok(false);
+            }
+            _ => {
+                // Ignore other keys when help is showing
+                return Ok(true);
+            }
+        }
+    }
+    
+    // Normal input handling
     match key.code {
         KeyCode::Char(' ') => {
             // Space bar - feed the pet
@@ -107,7 +159,7 @@ async fn handle_input(game: &mut Game, key: KeyEvent) -> Result<bool> {
         KeyCode::Char('x') | KeyCode::Char('X') => {
             // X - emergency exit (pet dies)
             game.emergency_exit()?;
-            return Ok(false);
+            // Don't exit immediately - let death screen show
         }
         KeyCode::Char('h') | KeyCode::Char('H') => {
             // H - show help
@@ -127,7 +179,7 @@ fn print_welcome() {
     println!("{}", "Your pet will actually consume RAM to survive!".yellow());
     println!("{}", "Watch your Task Manager to see it grow!".yellow());
     println!();
-    println!("{}", "Press any key to start...".bright_white().blink());
+    println!("{}", "Press any key to start...".bright_white());
     
     // Wait for key press
     let _ = std::io::stdin().read_line(&mut String::new());

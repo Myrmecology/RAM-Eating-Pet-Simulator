@@ -106,9 +106,9 @@ impl Game {
         // Check for critical RAM levels
         self.check_ram_levels()?;
         
-        // Clean up old messages
+        // Clean up old messages (keep messages for 5 seconds instead of 3)
         self.messages.retain(|(_, time, _)| {
-            now.duration_since(*time).as_secs() < 3
+            now.duration_since(*time).as_secs() < 5
         });
         
         // Update max size stat
@@ -126,7 +126,7 @@ impl Game {
         if free_ram < amount_mb + self.config.system.min_free_ram_mb {
             self.add_message(
                 "Not enough free RAM! Close some programs first!".to_string(),
-                "".red(),
+                "❌".to_string().red(),
             );
             return Ok(());
         }
@@ -163,7 +163,7 @@ impl Game {
         
         // Special message for favorite food
         self.add_message(
-            format!("Favorite food incoming! ({} MB)", favorite_amount),
+            format!("Favorite food! ({} MB)", favorite_amount),
             "✨ PURE JOY ✨".bright_green(),
         );
         
@@ -173,33 +173,17 @@ impl Game {
         Ok(())
     }
     
-    /// Render the game screen
+    /// Render the game screen using the fixed frame renderer
     pub fn render(&mut self) -> Result<()> {
-        execute!(stdout(), terminal::Clear(ClearType::All), cursor::MoveTo(0, 0))?;
-        
-        // Render header
-        self.renderer.draw_header(&self.pet)?;
-        
-        // Render pet
-        self.renderer.draw_pet(&self.pet)?;
-        
-        // Render stats
-        self.renderer.draw_stats(
+        // Use the new fixed frame renderer for stable display
+        self.renderer.draw_frame(
             &self.pet,
             &self.system_monitor,
+            &self.messages,
             self.stats.total_mb_eaten,
             self.stats.play_time,
+            self.show_help
         )?;
-        
-        // Render messages
-        self.renderer.draw_messages(&self.messages)?;
-        
-        // Render controls
-        if self.show_help {
-            self.renderer.draw_help()?;
-        } else {
-            self.renderer.draw_controls()?;
-        }
         
         stdout().flush()?;
         Ok(())
@@ -235,7 +219,7 @@ impl Game {
         std::fs::write(&self.config.game.save_path, json)?;
         
         self.add_message(
-            "Game saved!".to_string(),
+            "Game saved successfully!".to_string(),
             "💾".to_string().bright_cyan(),
         );
         
@@ -265,7 +249,7 @@ impl Game {
         self.memory_manager.allocate(self.pet.get_size_mb())?;
         
         self.add_message(
-            "Game loaded!".to_string(),
+            "Game loaded successfully!".to_string(),
             "📂".to_string().bright_cyan(),
         );
         
@@ -286,13 +270,18 @@ impl Game {
     pub fn toggle_help(&mut self) {
         self.show_help = !self.show_help;
     }
+
+    /// Check if help is currently showing     
+pub fn is_help_showing(&self) -> bool {    
+    self.show_help                         
+}                                           
     
     /// Add a message to display
     fn add_message(&mut self, text: String, icon: ColoredString) {
         self.messages.push((text, Instant::now(), icon));
         
-        // Keep only last 5 messages
-        if self.messages.len() > 5 {
+        // Keep only last 3 messages for cleaner display
+        if self.messages.len() > 3 {
             self.messages.remove(0);
         }
     }
@@ -301,17 +290,33 @@ impl Game {
     fn check_ram_levels(&mut self) -> Result<()> {
         let free_ram = self.system_monitor.get_free_ram_mb();
         
+        // Only warn every so often to avoid message spam
+        static mut LAST_WARNING: Option<Instant> = None;
+        let now = Instant::now();
+        
+        unsafe {
+            if let Some(last) = LAST_WARNING {
+                if now.duration_since(last).as_secs() < 10 {
+                    return Ok(()); // Don't warn too frequently
+                }
+            }
+        }
+        
         if free_ram < self.config.system.warning_threshold_mb {
             if free_ram < self.config.system.min_free_ram_mb {
                 self.add_message(
                     "CRITICAL: RAM dangerously low!".to_string(),
                     "⚠️".to_string().bright_red(),
                 );
-            } else {
+            } else if free_ram < self.config.system.warning_threshold_mb / 2 {
                 self.add_message(
                     format!("Warning: Only {} MB RAM free", free_ram),
                     "⚠️".to_string().yellow(),
                 );
+            }
+            
+            unsafe {
+                LAST_WARNING = Some(now);
             }
         }
         
@@ -336,5 +341,17 @@ mod tests {
     async fn test_game_creation() {
         let game = Game::new();
         assert!(game.is_ok());
+    }
+    
+    #[tokio::test]
+    async fn test_feed_pet() {
+        let mut game = Game::new().unwrap();
+        let initial_size = game.pet.get_size_mb();
+        
+        // Try to feed pet (may fail if not enough RAM)
+        let _ = game.feed_pet(10).await;
+        
+        // Size should either increase or stay same (if feeding failed)
+        assert!(game.pet.get_size_mb() >= initial_size);
     }
 }

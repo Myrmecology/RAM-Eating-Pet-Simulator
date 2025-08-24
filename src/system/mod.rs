@@ -75,7 +75,7 @@ impl SystemUtils {
     /// Get system uptime
     pub fn get_uptime() -> Result<std::time::Duration> {
         use sysinfo::System;
-        let sys = System::new_all();
+        let _sys = System::new_all();
         Ok(std::time::Duration::from_secs(System::uptime()))
     }
 }

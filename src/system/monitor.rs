@@ -2,7 +2,7 @@
 // RAM Eating Pet Simulator - System Monitoring
 
 use anyhow::Result;
-use sysinfo::{System, Pid, ProcessExt, SystemExt};
+use sysinfo::{System, Pid};
 use std::sync::{Arc, Mutex};
 
 /// System monitor for tracking RAM usage
@@ -65,7 +65,7 @@ impl SystemMonitor {
         let mut sys = self.system.lock().unwrap();
         sys.refresh_processes();
         
-        let pid = Pid::from(std::process::id() as i32);
+        let pid = Pid::from(std::process::id() as usize);
         
         if let Some(process) = sys.process(pid) {
             Ok((process.memory() / 1024) as usize)
@@ -84,10 +84,10 @@ impl SystemMonitor {
             used_ram_mb: (sys.used_memory() / 1024) as usize,
             free_ram_mb: (sys.available_memory() / 1024) as usize,
             cpu_count: sys.cpus().len(),
-            system_name: sys.name().unwrap_or_else(|| "Unknown".to_string()),
-            kernel_version: sys.kernel_version().unwrap_or_else(|| "Unknown".to_string()),
-            os_version: sys.os_version().unwrap_or_else(|| "Unknown".to_string()),
-            host_name: sys.host_name().unwrap_or_else(|| "Unknown".to_string()),
+            system_name: System::name().unwrap_or_else(|| "Unknown".to_string()),
+            kernel_version: System::kernel_version().unwrap_or_else(|| "Unknown".to_string()),
+            os_version: System::os_version().unwrap_or_else(|| "Unknown".to_string()),
+            host_name: System::host_name().unwrap_or_else(|| "Unknown".to_string()),
         }
     }
     

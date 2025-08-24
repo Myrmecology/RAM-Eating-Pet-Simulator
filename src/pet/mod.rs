@@ -10,9 +10,11 @@ use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
 use crate::config::Config;
-use personality::{Personality, Mood};
+// Make Personality and Mood public by re-exporting
+pub use personality::{Personality, Mood};
 use state::PetState;
 use metabolism::Metabolism;
+// Re-export for public use
 
 /// The main Pet structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
