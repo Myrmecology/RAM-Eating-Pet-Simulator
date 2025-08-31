@@ -1,7 +1,9 @@
 # 🎮 RAM Eating Pet Simulator
 # Random Access Memory
 
-A virtual pet that **literally** consumes your computer's RAM to survive! Watch in Task Manager as your adorable digital companion grows by eating actual memory.
+For a video demo of this project please visit: https://www.youtube.com/watch?v=13VFGT2zZvI 
+
+A virtual pet that **literally** consumes your computer's RAM to survive! Watch in Task Manager as your adorable digital companion grows by eating actual memory. 
 
 ![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
