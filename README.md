@@ -53,8 +53,7 @@ Watch System RAM: Don't let your system run out of memory!
 Personality Matters: Each pet has different food preferences
 Size Evolution: Your pet changes appearance as it grows
 
-🎨 Pet Evolution Stages
-StageSizeDescriptionBaby0-50 MBJust a tiny RAM nibblerChild51-150 MBGrowing and learningTeen151-300 MBAppetite increasingAdult301-500 MBFully grownChubby501-1000 MBWell-fedFat1001-1500 MBGetting largeHuge1501-2000 MBImpressive sizeGIGANTIC2000+ MBABSOLUTE UNIT
+
 ⚠️ Safety Features
 
 Minimum RAM Reserve: Always keeps 1GB free for system stability
