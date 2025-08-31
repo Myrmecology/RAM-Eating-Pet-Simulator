@@ -159,7 +159,6 @@ async fn handle_input(game: &mut Game, key: KeyEvent) -> Result<bool> {
         KeyCode::Char('x') | KeyCode::Char('X') => {
             // X - emergency exit (pet dies)
             game.emergency_exit()?;
-            // Don't exit immediately - let death screen show
         }
         KeyCode::Char('h') | KeyCode::Char('H') => {
             // H - show help

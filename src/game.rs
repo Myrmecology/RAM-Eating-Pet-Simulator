@@ -33,6 +33,8 @@ pub struct Game {
     last_update: Instant,
     /// Show help overlay
     show_help: bool,
+    /// Last time help was toggled (prevents rapid toggling)
+    help_last_toggle: Instant,
     /// Game messages to display
     messages: Vec<(String, Instant, ColoredString)>,
     /// Game score/stats
@@ -77,6 +79,7 @@ impl Game {
             config,
             last_update: Instant::now(),
             show_help: false,
+            help_last_toggle: Instant::now(),
             messages: Vec::new(),
             stats: GameStats {
                 session_start: Instant::now(),
@@ -106,7 +109,7 @@ impl Game {
         // Check for critical RAM levels
         self.check_ram_levels()?;
         
-        // Clean up old messages (keep messages for 5 seconds instead of 3)
+        // Clean up old messages (keep messages for 5 seconds)
         self.messages.retain(|(_, time, _)| {
             now.duration_since(*time).as_secs() < 5
         });
@@ -266,15 +269,20 @@ impl Game {
         Ok(())
     }
     
-    /// Toggle help display
+    /// Toggle help display with cooldown
     pub fn toggle_help(&mut self) {
-        self.show_help = !self.show_help;
+        let now = Instant::now();
+        // Only toggle if 500ms have passed since last toggle
+        if now.duration_since(self.help_last_toggle) > Duration::from_millis(500) {
+            self.show_help = !self.show_help;
+            self.help_last_toggle = now;
+        }
     }
-
-    /// Check if help is currently showing     
-pub fn is_help_showing(&self) -> bool {    
-    self.show_help                         
-}                                           
+    
+    /// Check if help is currently showing
+    pub fn is_help_showing(&self) -> bool {
+        self.show_help
+    }
     
     /// Add a message to display
     fn add_message(&mut self, text: String, icon: ColoredString) {
